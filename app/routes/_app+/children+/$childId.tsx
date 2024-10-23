@@ -4,7 +4,13 @@ import {
 	type LoaderFunctionArgs,
 	type ActionFunctionArgs,
 } from '@remix-run/node'
-import { useLoaderData, Form, useActionData, Link } from '@remix-run/react'
+import {
+	useLoaderData,
+	Form,
+	useActionData,
+	Link,
+	useNavigation,
+} from '@remix-run/react'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
 import { Button } from '#app/components/ui/button.tsx'
 import { Combobox } from '#app/components/ui/combobox.tsx'
@@ -68,6 +74,24 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export default function ChildDetails() {
 	const { child, box, toys: allToys } = useLoaderData<typeof loader>()
 	const actionData = useActionData<typeof action>()
+	const navigation = useNavigation()
+	let boxToys: Array<{ _id: string; name: string | null }> = box?.toys ?? []
+
+	if (navigation.formData) {
+		const intent = navigation.formData.get('intent')
+		const itemId = navigation.formData.get('item')
+		if (intent === 'add-item') {
+			boxToys = [
+				...boxToys,
+				{
+					_id: itemId as string,
+					name: allToys.find((toy) => toy._id === itemId)?.name ?? '',
+				},
+			]
+		} else if (intent === 'remove-item') {
+			boxToys = boxToys.filter((toy) => toy._id !== itemId)
+		}
+	}
 
 	return (
 		<div className="mx-auto max-w-4xl p-6">
@@ -95,9 +119,11 @@ export default function ChildDetails() {
 						<>
 							<h2 className="mb-2 text-xl font-semibold">Box Contents:</h2>
 							<ul className="mb-4">
-								{box.toys?.map((toy, index) => (
+								{boxToys.map((toy, index) => (
 									<li key={index} className="flex items-center justify-between">
-										{toy.name}
+										<Link className="underline" to={`/toys/${toy._id}`}>
+											{toy.name}
+										</Link>
 										<Form method="post">
 											<input type="hidden" name="item" value={toy._id} />
 											<button
@@ -117,10 +143,12 @@ export default function ChildDetails() {
 									<Combobox
 										placeholder="Find a toy"
 										name="item"
-										options={allToys.map((toy) => ({
-											value: toy._id,
-											label: toy.name ?? 'Unknown toy',
-										}))}
+										options={allToys
+											.filter((t) => boxToys.every((bt) => bt._id !== t._id))
+											.map((toy) => ({
+												value: toy._id,
+												label: toy.name ?? 'Unknown toy',
+											}))}
 									/>
 									<Button type="submit" name="intent" value="add-item">
 										Add Item
