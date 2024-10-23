@@ -59,7 +59,7 @@ export async function getBoxForChild(
 	)
 	const box = await cachified({
 		key: `box-for-child:${childId}`,
-		// ttl: 1000 * 5,
+		// ttl: 1000 * 60 * 60,
 		// swr: 1000,
 		ttl: 100,
 		cache,
