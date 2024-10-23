@@ -10,7 +10,10 @@ import {
 	useActionData,
 	Link,
 	useNavigation,
+	useFetcher,
+	useFetchers,
 } from '@remix-run/react'
+import { useState } from 'react'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
 import { Button } from '#app/components/ui/button.tsx'
 import { Combobox } from '#app/components/ui/combobox.tsx'
@@ -71,25 +74,77 @@ export async function action({ request, params }: ActionFunctionArgs) {
 	}
 }
 
+export function RemoveItemFromBox({ itemId }: { itemId: string }) {
+	const fetcher = useFetcher({ key: `remove-${itemId}` })
+	return (
+		<fetcher.Form method="post">
+			<input type="hidden" name="item" value={itemId} />
+			<button
+				type="submit"
+				name="intent"
+				value="remove-item"
+				className="ml-2 text-red-500 hover:text-red-700"
+			>
+				Remove
+			</button>
+		</fetcher.Form>
+	)
+}
+
+function AddItemToBox({
+	allToys,
+	boxToys,
+}: {
+	allToys: Array<{ _id: string; name: string | null }>
+	boxToys: Array<{ _id: string; name: string | null }>
+}) {
+	const [selectedItem, setSelectedItem] = useState<string | null>(null)
+	const fetcher = useFetcher({ key: `add-item-${selectedItem}` })
+	return (
+		<fetcher.Form method="post">
+			<div className="flex gap-2 sm:flex-col">
+				<Combobox
+					placeholder="Find a toy"
+					name="item"
+					selectedItem={selectedItem}
+					onChange={setSelectedItem}
+					options={allToys
+						.filter((t) => boxToys.every((bt) => bt._id !== t._id))
+						.map((toy) => ({
+							value: toy._id,
+							label: toy.name ?? 'Unknown toy',
+						}))}
+				/>
+				<Button type="submit" name="intent" value="add-item">
+					Add Item
+				</Button>
+			</div>
+		</fetcher.Form>
+	)
+}
+
 export default function ChildDetails() {
 	const { child, box, toys: allToys } = useLoaderData<typeof loader>()
 	const actionData = useActionData<typeof action>()
-	const navigation = useNavigation()
+	const fetchers = useFetchers()
 	let boxToys: Array<{ _id: string; name: string | null }> = box?.toys ?? []
 
-	if (navigation.formData) {
-		const intent = navigation.formData.get('intent')
-		const itemId = navigation.formData.get('item')
-		if (intent === 'add-item') {
-			boxToys = [
-				...boxToys,
-				{
-					_id: itemId as string,
-					name: allToys.find((toy) => toy._id === itemId)?.name ?? '',
-				},
-			]
-		} else if (intent === 'remove-item') {
-			boxToys = boxToys.filter((toy) => toy._id !== itemId)
+	for (const fetcher of fetchers) {
+		if (fetcher.formData) {
+			const intent = fetcher.formData.get('intent')
+			const itemId = fetcher.formData.get('item')
+			if (intent === 'remove-item') {
+				boxToys = boxToys.filter((toy) => toy._id !== itemId)
+			}
+			if (intent === 'add-item') {
+				boxToys = [
+					...boxToys,
+					{
+						_id: itemId as string,
+						name: allToys.find((toy) => toy._id === itemId)?.name ?? '',
+					},
+				]
+			}
 		}
 	}
 
@@ -124,37 +179,11 @@ export default function ChildDetails() {
 										<Link className="underline" to={`/toys/${toy._id}`}>
 											{toy.name}
 										</Link>
-										<Form method="post">
-											<input type="hidden" name="item" value={toy._id} />
-											<button
-												type="submit"
-												name="intent"
-												value="remove-item"
-												className="ml-2 text-red-500 hover:text-red-700"
-											>
-												Remove
-											</button>
-										</Form>
+										<RemoveItemFromBox itemId={toy._id} />
 									</li>
 								))}
 							</ul>
-							<Form method="post" className="mb-4">
-								<div className="flex gap-2 sm:flex-col">
-									<Combobox
-										placeholder="Find a toy"
-										name="item"
-										options={allToys
-											.filter((t) => boxToys.every((bt) => bt._id !== t._id))
-											.map((toy) => ({
-												value: toy._id,
-												label: toy.name ?? 'Unknown toy',
-											}))}
-									/>
-									<Button type="submit" name="intent" value="add-item">
-										Add Item
-									</Button>
-								</div>
-							</Form>
+							<AddItemToBox allToys={allToys} boxToys={boxToys} />
 							<Link
 								to={`/box-label/${box._id}`}
 								className="rounded bg-green-500 px-2 py-1 text-white hover:bg-green-600"

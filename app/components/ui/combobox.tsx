@@ -17,17 +17,20 @@ export function Combobox({
 	placeholder,
 	name,
 	options,
+	selectedItem: value,
+	onChange: setValue,
 }: {
 	placeholder: string
 	name: string
 	options: Array<{ value: string; label: string }>
+	selectedItem: string | null
+	onChange: (value: string) => void
 }) {
 	const [open, setOpen] = React.useState(false)
-	const [value, setValue] = React.useState('')
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
-			<input type="hidden" name={name} value={value} />
+			{value ? <input type="hidden" name={name} value={value} /> : null}
 			<PopoverTrigger asChild>
 				<Button
 					variant="outline"

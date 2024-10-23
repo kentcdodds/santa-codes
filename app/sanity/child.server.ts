@@ -59,8 +59,9 @@ export async function getBoxForChild(
 	)
 	const box = await cachified({
 		key: `box-for-child:${childId}`,
-		ttl: 1000 * 60 * 60,
-		swr: 1000,
+		// ttl: 1000 * 5,
+		// swr: 1000,
+		ttl: 100,
 		cache,
 		forceFresh,
 		getFreshValue() {
@@ -85,7 +86,7 @@ export async function createBoxForChild(childId: string) {
 export async function addItemToBox(childId: string, toyId: string) {
 	const box = await getBoxForChild(childId)
 	invariantResponse(box, 'Box not found', { status: 404 })
-	const result = await sanityWriteClient
+	await sanityWriteClient
 		.patch(box._id)
 		.setIfMissing({ toys: [] })
 		.append('toys', [{ _type: 'reference', _ref: toyId }])
@@ -93,7 +94,6 @@ export async function addItemToBox(childId: string, toyId: string) {
 		.catch((error) => {
 			console.error('addItemToBox error', error)
 		})
-	console.log('addItemToBox result', result)
 }
 
 export async function removeItemFromBox(childId: string, toyId: string) {
