@@ -544,15 +544,40 @@ export type AllSanitySchemaTypes =
 	| SanityAssistInstruction
 	| SanityAssistSchemaTypeField
 export declare const internalGroqTypeReferenceTo: unique symbol
-// Source: ../santa-codes/app/utils/sanity.server.ts
-// Variable: childCountQuery
-// Query: count(*[_type=="child"])
-export type ChildCountQueryResult = number
+// Source: ../santa-codes/app/utils/toys.server.ts
+// Variable: toysQuery
+// Query: *[_type=="toy" && (name match $searchTerm + "*" || _id match $searchTerm + "*" || description match $searchTerm + "*")] {  _id,  name,  description,  quantity}
+export type ToysQueryResult = Array<{
+	_id: string
+	name: string | null
+	description: string | null
+	quantity: number | null
+}>
+// Variable: query
+// Query: *[_type == "toy" && _id == $toyId][0]
+export type QueryResult = {
+	_id: string
+	_type: 'toy'
+	_createdAt: string
+	_updatedAt: string
+	_rev: string
+	name?: string
+	description?: string
+	quantity?: number
+	storageLocation?: {
+		_ref: string
+		_type: 'reference'
+		_weak?: boolean
+		[internalGroqTypeReferenceTo]?: 'warehouse'
+	}
+	manufactureDate?: string
+} | null
 
 // Query TypeMap
 import '@sanity/client'
 declare module '@sanity/client' {
 	interface SanityQueries {
-		'count(*[_type=="child"])': ChildCountQueryResult
+		'*[_type=="toy" && (name match $searchTerm + "*" || _id match $searchTerm + "*" || description match $searchTerm + "*")] {\n  _id,\n  name,\n  description,\n  quantity\n}': ToysQueryResult
+		'*[_type == "toy" && _id == $toyId][0]': QueryResult
 	}
 }
