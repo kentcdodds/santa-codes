@@ -1,6 +1,6 @@
 import { defineQuery } from 'groq'
-import { cachified, cache } from './cache.server.ts'
-import { sanityClient, urlFor } from './sanity.server.ts'
+import { sanityClient, urlFor } from '#app/sanity/client.server.ts'
+import { cachified, cache } from '#app/utils/cache.server.ts'
 
 const toysQuery =
 	defineQuery(`*[_type=="toy" && (name match $searchTerm + "*" || _id match $searchTerm + "*" || description match $searchTerm + "*")] {
@@ -11,7 +11,7 @@ const toysQuery =
 	image
 }`)
 
-export async function getToys(searchTerm: string) {
+export async function getToys(searchTerm = '') {
 	// this is such a Kent-during-a-hackathon thing to do... who adds caching to a hackathon app 😂
 	const toys = await cachified({
 		key: `search-toys:${searchTerm}`,

@@ -8,10 +8,12 @@ import { StatusButton } from './ui/status-button.tsx'
 
 export function SearchBar({
 	status,
+	formAction,
 	autoFocus = false,
 	autoSubmit = false,
 }: {
 	status: 'idle' | 'pending' | 'success' | 'error'
+	formAction: string
 	autoFocus?: boolean
 	autoSubmit?: boolean
 }) {
@@ -20,7 +22,7 @@ export function SearchBar({
 	const submit = useSubmit()
 	const isSubmitting = useIsPending({
 		formMethod: 'GET',
-		formAction: '/toys',
+		formAction,
 	})
 
 	const handleFormChange = useDebounce((form: HTMLFormElement) => {
@@ -30,7 +32,7 @@ export function SearchBar({
 	return (
 		<Form
 			method="GET"
-			action="/toys"
+			action={formAction}
 			className="flex flex-wrap items-center justify-center gap-2"
 			onChange={(e) => autoSubmit && handleFormChange(e.currentTarget)}
 		>

@@ -1,6 +1,6 @@
 import { json, type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, useLoaderData } from '@remix-run/react'
-import { getToys } from '#app/utils/toys.server.ts'
+import { getToys } from '#app/sanity/toys.server.ts'
 
 export async function loader({ request }: LoaderFunctionArgs) {
 	const url = new URL(request.url)

@@ -68,6 +68,28 @@ export type Geopoint = {
 	alt?: number
 }
 
+export type Box = {
+	_id: string
+	_type: 'box'
+	_createdAt: string
+	_updatedAt: string
+	_rev: string
+	child?: {
+		_ref: string
+		_type: 'reference'
+		_weak?: boolean
+		[internalGroqTypeReferenceTo]?: 'child'
+	}
+	toys?: Array<{
+		_ref: string
+		_type: 'reference'
+		_weak?: boolean
+		_key: string
+		[internalGroqTypeReferenceTo]?: 'toy'
+	}>
+	deliveryDate?: string
+}
+
 export type Event = {
 	_id: string
 	_type: 'event'
@@ -522,6 +544,7 @@ export type AllSanitySchemaTypes =
 	| SanityImageDimensions
 	| SanityFileAsset
 	| Geopoint
+	| Box
 	| Event
 	| Post
 	| Person
@@ -555,7 +578,51 @@ export type AllSanitySchemaTypes =
 	| SanityAssistInstruction
 	| SanityAssistSchemaTypeField
 export declare const internalGroqTypeReferenceTo: unique symbol
-// Source: ../santa-codes/app/utils/toys.server.ts
+// Source: ../santa-codes/app/sanity/child.server.ts
+// Variable: getChildrenQuery
+// Query: *[_type=="child" && status == "nice" && name match $searchTerm] {		_id,		name,		wishList,		status	}
+export type GetChildrenQueryResult = Array<{
+	_id: string
+	name: string | null
+	wishList: Array<string> | null
+	status: 'naughty' | 'nice' | null
+}>
+// Variable: getChildByIdQuery
+// Query: *[_type == "child" && _id == $childId][0]
+export type GetChildByIdQueryResult = {
+	_id: string
+	_type: 'child'
+	_createdAt: string
+	_updatedAt: string
+	_rev: string
+	name?: string
+	age?: number
+	address?: string
+	status?: 'naughty' | 'nice'
+	wishList?: Array<string>
+} | null
+// Variable: getBoxForChildQuery
+// Query: *[_type == "box" && references($childId)][0] {			_id,			toys[]->{				_id,				name,				image			}		}
+export type GetBoxForChildQueryResult = {
+	_id: string
+	toys: Array<{
+		_id: string
+		name: string | null
+		image: {
+			asset?: {
+				_ref: string
+				_type: 'reference'
+				_weak?: boolean
+				[internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+			}
+			hotspot?: SanityImageHotspot
+			crop?: SanityImageCrop
+			_type: 'image'
+		} | null
+	}> | null
+} | null
+
+// Source: ../santa-codes/app/sanity/toys.server.ts
 // Variable: toysQuery
 // Query: *[_type=="toy" && (name match $searchTerm + "*" || _id match $searchTerm + "*" || description match $searchTerm + "*")] {  _id,  name,  description,  quantity,	image}
 export type ToysQueryResult = Array<{
@@ -610,6 +677,9 @@ export type QueryResult = {
 import '@sanity/client'
 declare module '@sanity/client' {
 	interface SanityQueries {
+		'*[_type=="child" && status == "nice" && name match $searchTerm] {\n\t\t_id,\n\t\tname,\n\t\twishList,\n\t\tstatus\n\t}': GetChildrenQueryResult
+		'*[_type == "child" && _id == $childId][0]': GetChildByIdQueryResult
+		'*[_type == "box" && references($childId)][0] {\n\t\t\t_id,\n\t\t\ttoys[]->{\n\t\t\t\t_id,\n\t\t\t\tname,\n\t\t\t\timage\n\t\t\t}\n\t\t}': GetBoxForChildQueryResult
 		'*[_type=="toy" && (name match $searchTerm + "*" || _id match $searchTerm + "*" || description match $searchTerm + "*")] {\n  _id,\n  name,\n  description,\n  quantity,\n\timage\n}': ToysQueryResult
 		'*[_type == "toy" && _id == $toyId][0]': QueryResult
 	}

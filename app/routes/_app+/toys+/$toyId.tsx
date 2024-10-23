@@ -2,8 +2,8 @@ import { invariantResponse } from '@epic-web/invariant'
 import { json, type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, useLoaderData } from '@remix-run/react'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
-import { urlFor } from '#app/utils/sanity.server.ts'
-import { getToyById } from '#app/utils/toys.server.ts'
+import { urlFor } from '#app/sanity/client.server.ts'
+import { getToyById } from '#app/sanity/toys.server.ts'
 
 export async function loader({ params }: LoaderFunctionArgs) {
 	const { toyId } = params

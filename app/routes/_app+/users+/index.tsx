@@ -63,7 +63,12 @@ export default function UsersRoute() {
 		<div className="container mb-48 mt-36 flex flex-col items-center justify-center gap-6">
 			<h1 className="text-h1">Santa Codes Users</h1>
 			<div className="w-full max-w-[700px]">
-				<SearchBar status={data.status} autoFocus autoSubmit />
+				<SearchBar
+					formAction="/users"
+					status={data.status}
+					autoFocus
+					autoSubmit
+				/>
 			</div>
 			<main>
 				{data.status === 'idle' ? (

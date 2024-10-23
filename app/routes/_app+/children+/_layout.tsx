@@ -19,7 +19,7 @@ export default function Layout() {
 	return (
 		<div className="container mx-auto p-4">
 			<div className="mx-auto max-w-sm">
-				<SearchBar formAction="/toys" autoSubmit status="idle" />
+				<SearchBar formAction="/children" autoSubmit status="idle" />
 			</div>
 			<div className="mt-12" />
 			<Outlet />

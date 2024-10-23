@@ -2,8 +2,8 @@ import { invariantResponse } from '@epic-web/invariant'
 import { type LoaderFunctionArgs, json } from '@remix-run/node'
 import { Link, useLoaderData } from '@remix-run/react'
 import * as QRCode from 'qrcode'
-import { urlFor } from '#app/utils/sanity.server.ts'
-import { getToyById } from '#app/utils/toys.server.ts'
+import { urlFor } from '#app/sanity/client.server.ts'
+import { getToyById } from '#app/sanity/toys.server.ts'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 	const { toyId } = params

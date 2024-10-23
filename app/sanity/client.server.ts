@@ -8,7 +8,11 @@ export const sanityClient = createClient({
 	projectId: SANITY_STUDIO_PROJECT_ID,
 	dataset: SANITY_STUDIO_DATASET,
 	apiVersion: '2024-09-18',
-	useCdn: true,
+	useCdn: false,
+})
+
+export const sanityWriteClient = sanityClient.withConfig({
+	token: process.env.SANITY_WRITE_TOKEN,
 })
 
 const builder = imageUrlBuilder(sanityClient)
