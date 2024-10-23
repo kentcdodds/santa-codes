@@ -142,6 +142,52 @@ export type Person = {
 	}
 }
 
+export type Page = {
+	_id: string
+	_type: 'page'
+	_createdAt: string
+	_updatedAt: string
+	_rev: string
+	title?: string
+	slug?: Slug
+	content?: string
+}
+
+export type Slug = {
+	_type: 'slug'
+	current?: string
+	source?: string
+}
+
+export type Toy = {
+	_id: string
+	_type: 'toy'
+	_createdAt: string
+	_updatedAt: string
+	_rev: string
+	name?: string
+	description?: string
+	quantity?: number
+	storageLocation?: {
+		_ref: string
+		_type: 'reference'
+		_weak?: boolean
+		[internalGroqTypeReferenceTo]?: 'warehouse'
+	}
+	manufactureDate?: string
+	image?: {
+		asset?: {
+			_ref: string
+			_type: 'reference'
+			_weak?: boolean
+			[internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+		}
+		hotspot?: SanityImageHotspot
+		crop?: SanityImageCrop
+		_type: 'image'
+	}
+}
+
 export type SanityImageCrop = {
 	_type: 'sanity.imageCrop'
 	top?: number
@@ -197,41 +243,6 @@ export type SanityImageMetadata = {
 	blurHash?: string
 	hasAlpha?: boolean
 	isOpaque?: boolean
-}
-
-export type Page = {
-	_id: string
-	_type: 'page'
-	_createdAt: string
-	_updatedAt: string
-	_rev: string
-	title?: string
-	slug?: Slug
-	content?: string
-}
-
-export type Slug = {
-	_type: 'slug'
-	current?: string
-	source?: string
-}
-
-export type Toy = {
-	_id: string
-	_type: 'toy'
-	_createdAt: string
-	_updatedAt: string
-	_rev: string
-	name?: string
-	description?: string
-	quantity?: number
-	storageLocation?: {
-		_ref: string
-		_type: 'reference'
-		_weak?: boolean
-		[internalGroqTypeReferenceTo]?: 'warehouse'
-	}
-	manufactureDate?: string
 }
 
 export type Warehouse = {
@@ -514,14 +525,14 @@ export type AllSanitySchemaTypes =
 	| Event
 	| Post
 	| Person
+	| Page
+	| Slug
+	| Toy
 	| SanityImageCrop
 	| SanityImageHotspot
 	| SanityImageAsset
 	| SanityAssetSourceData
 	| SanityImageMetadata
-	| Page
-	| Slug
-	| Toy
 	| Warehouse
 	| Material
 	| Supplier
@@ -546,12 +557,23 @@ export type AllSanitySchemaTypes =
 export declare const internalGroqTypeReferenceTo: unique symbol
 // Source: ../santa-codes/app/utils/toys.server.ts
 // Variable: toysQuery
-// Query: *[_type=="toy" && (name match $searchTerm + "*" || _id match $searchTerm + "*" || description match $searchTerm + "*")] {  _id,  name,  description,  quantity}
+// Query: *[_type=="toy" && (name match $searchTerm + "*" || _id match $searchTerm + "*" || description match $searchTerm + "*")] {  _id,  name,  description,  quantity,	image}
 export type ToysQueryResult = Array<{
 	_id: string
 	name: string | null
 	description: string | null
 	quantity: number | null
+	image: {
+		asset?: {
+			_ref: string
+			_type: 'reference'
+			_weak?: boolean
+			[internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+		}
+		hotspot?: SanityImageHotspot
+		crop?: SanityImageCrop
+		_type: 'image'
+	} | null
 }>
 // Variable: query
 // Query: *[_type == "toy" && _id == $toyId][0]
@@ -571,13 +593,24 @@ export type QueryResult = {
 		[internalGroqTypeReferenceTo]?: 'warehouse'
 	}
 	manufactureDate?: string
+	image?: {
+		asset?: {
+			_ref: string
+			_type: 'reference'
+			_weak?: boolean
+			[internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+		}
+		hotspot?: SanityImageHotspot
+		crop?: SanityImageCrop
+		_type: 'image'
+	}
 } | null
 
 // Query TypeMap
 import '@sanity/client'
 declare module '@sanity/client' {
 	interface SanityQueries {
-		'*[_type=="toy" && (name match $searchTerm + "*" || _id match $searchTerm + "*" || description match $searchTerm + "*")] {\n  _id,\n  name,\n  description,\n  quantity\n}': ToysQueryResult
+		'*[_type=="toy" && (name match $searchTerm + "*" || _id match $searchTerm + "*" || description match $searchTerm + "*")] {\n  _id,\n  name,\n  description,\n  quantity,\n\timage\n}': ToysQueryResult
 		'*[_type == "toy" && _id == $toyId][0]': QueryResult
 	}
 }

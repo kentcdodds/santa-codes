@@ -7,7 +7,8 @@ const toysQuery =
   _id,
   name,
   description,
-  quantity
+  quantity,
+	image
 }`)
 
 export async function getToys(searchTerm: string) {

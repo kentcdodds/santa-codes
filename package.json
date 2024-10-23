@@ -60,6 +60,7 @@
     "@remix-run/node": "2.13.1",
     "@remix-run/react": "2.13.1",
     "@sanity/client": "^6.22.2",
+    "@sanity/image-url": "^1.0.2",
     "@sentry/profiling-node": "^8.35.0",
     "@sentry/remix": "^8.35.0",
     "address": "^2.0.3",

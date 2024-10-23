@@ -127,7 +127,7 @@ export default function App() {
 	const theme = useTheme()
 	const matches = useMatches()
 	const isOnSearchPage = matches.find(
-		(m) => m.id === 'routes/_app+/toys+/index',
+		(m) => m.id === 'routes/_app+/toys+/_layout',
 	)
 	const searchBar = isOnSearchPage ? null : <SearchBar status="idle" />
 	useToast(data.toast)

@@ -2,6 +2,7 @@ import { invariantResponse } from '@epic-web/invariant'
 import { type LoaderFunctionArgs, json } from '@remix-run/node'
 import { Link, useLoaderData } from '@remix-run/react'
 import * as QRCode from 'qrcode'
+import { urlFor } from '#app/utils/sanity.server.ts'
 import { getToyById } from '#app/utils/toys.server.ts'
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
@@ -13,13 +14,16 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 	const toy = await getToyById(toyId)
 	invariantResponse(toy, 'toy not found')
 
+	const toyImageUrl = toy.image ? urlFor(toy.image).width(300).url() : null
+
 	const qrCode = await QRCode.toDataURL(toyUrl)
 
-	return json({ toy, toyUrl, toyPath: `/toys/${toyId}`, qrCode })
+	return json({ toy, toyUrl, toyPath: `/toys/${toyId}`, qrCode, toyImageUrl })
 }
 
 export default function LabelQRCode() {
-	const { toy, toyUrl, toyPath, qrCode } = useLoaderData<typeof loader>()
+	const { toy, toyUrl, toyPath, qrCode, toyImageUrl } =
+		useLoaderData<typeof loader>()
 
 	// Remove the protocol from the URL for display purposes only
 	const displayUrl = toyUrl.replace(/^https?:\/\//, '')
@@ -28,6 +32,15 @@ export default function LabelQRCode() {
 		<div className="container mx-auto flex min-h-screen items-center justify-center bg-white">
 			<div className="text-center">
 				<h1 className="mb-4 text-2xl font-bold">{toy.name}</h1>
+				{toyImageUrl ? (
+					<img
+						src={toyImageUrl}
+						alt={toy.name}
+						className="mx-auto"
+						width={256}
+						height={256}
+					/>
+				) : null}
 				<img
 					src={qrCode}
 					alt="QR Code"

@@ -1,43 +1,36 @@
 import { invariantResponse } from '@epic-web/invariant'
 import { json, type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, useLoaderData } from '@remix-run/react'
-import { defineQuery } from 'groq'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
-import { cache, cachified } from '#app/utils/cache.server.ts'
-import { sanityClient } from '#app/utils/sanity.server.ts'
+import { urlFor } from '#app/utils/sanity.server.ts'
+import { getToyById } from '#app/utils/toys.server.ts'
 
 export async function loader({ params }: LoaderFunctionArgs) {
 	const { toyId } = params
+	invariantResponse(toyId, 'toyId is required')
 
-	const query = defineQuery(`*[_type == "toy" && _id == $toyId][0]`)
-	const toy = await cachified({
-		key: `toy:${toyId}`,
-		ttl: 1000 * 60 * 60,
-		swr: 1000,
-		cache,
-		getFreshValue() {
-			return sanityClient.fetch(query, { toyId })
-		},
-	})
+	const toy = await getToyById(toyId)
 	invariantResponse(toy, 'Toy not found', { status: 404 })
+	const toyImageUrl = toy.image ? urlFor(toy.image).width(300).url() : null
 
-	return json({ toy })
+	return json({ toy, toyImageUrl })
 }
 
 export default function ToyDetails() {
-	const { toy } = useLoaderData<typeof loader>()
+	const { toy, toyImageUrl } = useLoaderData<typeof loader>()
 
 	return (
 		<div className="mx-auto max-w-4xl p-6">
 			<h1 className="mb-4 text-3xl font-bold">{toy.name}</h1>
 			<div className="flex flex-col gap-8 md:flex-row">
 				<div className="md:w-1/2">
-					{/* TODO: add images */}
-					{/* <img
-						src={toy.imageUrl}
-						alt={toy.name}
-						className="h-auto w-full rounded-lg shadow-md"
-					/> */}
+					{toyImageUrl ? (
+						<img
+							src={toyImageUrl}
+							alt={toy.name}
+							className="h-auto w-full rounded-lg shadow-md"
+						/>
+					) : null}
 				</div>
 				<div className="md:w-1/2">
 					<p className="mb-4 text-gray-700">{toy.description}</p>
