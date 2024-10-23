@@ -3,9 +3,9 @@ import { defineQuery } from 'groq'
 import { sanityClient, sanityWriteClient } from '#app/sanity/client.server.ts'
 import { cachified, cache } from '#app/utils/cache.server.ts'
 
-export async function getNiceChildren(searchTerm: string) {
+export async function getNiceChildren(searchTerm = '') {
 	const getChildrenQuery =
-		defineQuery(`*[_type=="child" && status == "nice" && name match $searchTerm] {
+		defineQuery(`*[_type=="child" && status == "nice" && string::startsWith(lower(name), lower($searchTerm))] {
 		_id,
 		name,
 		wishList,
@@ -18,6 +18,7 @@ export async function getNiceChildren(searchTerm: string) {
 		swr: 1000,
 		cache,
 		async getFreshValue() {
+			console.log('getting children')
 			const children = await sanityClient.fetch(getChildrenQuery, {
 				searchTerm,
 			})

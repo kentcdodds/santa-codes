@@ -606,7 +606,7 @@ export type GetBoxByIdQueryResult = {
 
 // Source: ../santa-codes/app/sanity/child.server.ts
 // Variable: getChildrenQuery
-// Query: *[_type=="child" && status == "nice" && name match $searchTerm] {		_id,		name,		wishList,		status	}
+// Query: *[_type=="child" && status == "nice" && string::startsWith(lower(name), lower($searchTerm))] {		_id,		name,		wishList,		status	}
 export type GetChildrenQueryResult = Array<{
 	_id: string
 	name: string | null
@@ -704,7 +704,7 @@ import '@sanity/client'
 declare module '@sanity/client' {
 	interface SanityQueries {
 		'*[_type == "box" && _id == $boxId][0]{\n\t\t_id,\n\t\tchild->{\n\t\t\t_id,\n\t\t\tname,\n\t\t},\n\t\ttoys[]->{\n\t\t\t_id,\n\t\t\tname,\n\t\t\timage,\n\t\t}\n\t}': GetBoxByIdQueryResult
-		'*[_type=="child" && status == "nice" && name match $searchTerm] {\n\t\t_id,\n\t\tname,\n\t\twishList,\n\t\tstatus\n\t}': GetChildrenQueryResult
+		'*[_type=="child" && status == "nice" && string::startsWith(lower(name), lower($searchTerm))] {\n\t\t_id,\n\t\tname,\n\t\twishList,\n\t\tstatus\n\t}': GetChildrenQueryResult
 		'*[_type == "child" && _id == $childId][0]': GetChildByIdQueryResult
 		'*[_type == "box" && references($childId)][0] {\n\t\t\t_id,\n\t\t\ttoys[]->{\n\t\t\t\t_id,\n\t\t\t\tname,\n\t\t\t\timage\n\t\t\t}\n\t\t}': GetBoxForChildQueryResult
 		'*[_type=="toy" && (name match $searchTerm + "*" || _id match $searchTerm + "*" || description match $searchTerm + "*")] {\n  _id,\n  name,\n  description,\n  quantity,\n\timage\n}': ToysQueryResult
