@@ -1,6 +1,6 @@
 import { defineQuery } from 'groq'
 import { cachified, cache } from './cache.server.ts'
-import { sanityClient } from './sanity.server.ts'
+import { sanityClient, urlFor } from './sanity.server.ts'
 
 const toysQuery =
 	defineQuery(`*[_type=="toy" && (name match $searchTerm + "*" || _id match $searchTerm + "*" || description match $searchTerm + "*")] {
@@ -18,8 +18,12 @@ export async function getToys(searchTerm: string) {
 		ttl: 1000 * 60 * 60,
 		swr: 1000,
 		cache,
-		getFreshValue() {
-			return sanityClient.fetch(toysQuery, { searchTerm })
+		async getFreshValue() {
+			const toys = await sanityClient.fetch(toysQuery, { searchTerm })
+			return toys.map((toy) => ({
+				...toy,
+				imageUrl: toy.image ? urlFor(toy.image).width(600).url() : null,
+			}))
 		},
 	})
 	return toys
@@ -37,4 +41,9 @@ export async function getToyById(toyId: string) {
 		},
 	})
 	return toy
+		? {
+				...toy,
+				imageUrl: toy.image ? urlFor(toy.image).width(600).url() : null,
+			}
+		: null
 }
