@@ -578,6 +578,32 @@ export type AllSanitySchemaTypes =
 	| SanityAssistInstruction
 	| SanityAssistSchemaTypeField
 export declare const internalGroqTypeReferenceTo: unique symbol
+// Source: ../santa-codes/app/sanity/box.server.ts
+// Variable: getBoxByIdQuery
+// Query: *[_type == "box" && _id == $boxId][0]{		_id,		child->{			_id,			name,		},		toys[]->{			_id,			name,			image,		}	}
+export type GetBoxByIdQueryResult = {
+	_id: string
+	child: {
+		_id: string
+		name: string | null
+	} | null
+	toys: Array<{
+		_id: string
+		name: string | null
+		image: {
+			asset?: {
+				_ref: string
+				_type: 'reference'
+				_weak?: boolean
+				[internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+			}
+			hotspot?: SanityImageHotspot
+			crop?: SanityImageCrop
+			_type: 'image'
+		} | null
+	}> | null
+} | null
+
 // Source: ../santa-codes/app/sanity/child.server.ts
 // Variable: getChildrenQuery
 // Query: *[_type=="child" && status == "nice" && name match $searchTerm] {		_id,		name,		wishList,		status	}
@@ -677,6 +703,7 @@ export type QueryResult = {
 import '@sanity/client'
 declare module '@sanity/client' {
 	interface SanityQueries {
+		'*[_type == "box" && _id == $boxId][0]{\n\t\t_id,\n\t\tchild->{\n\t\t\t_id,\n\t\t\tname,\n\t\t},\n\t\ttoys[]->{\n\t\t\t_id,\n\t\t\tname,\n\t\t\timage,\n\t\t}\n\t}': GetBoxByIdQueryResult
 		'*[_type=="child" && status == "nice" && name match $searchTerm] {\n\t\t_id,\n\t\tname,\n\t\twishList,\n\t\tstatus\n\t}': GetChildrenQueryResult
 		'*[_type == "child" && _id == $childId][0]': GetChildByIdQueryResult
 		'*[_type == "box" && references($childId)][0] {\n\t\t\t_id,\n\t\t\ttoys[]->{\n\t\t\t\t_id,\n\t\t\t\tname,\n\t\t\t\timage\n\t\t\t}\n\t\t}': GetBoxForChildQueryResult
