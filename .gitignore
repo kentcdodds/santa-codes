@@ -2,6 +2,7 @@ node_modules
 .DS_store
 
 /build
+/public/build
 /server-build
 .env
 .cache
@@ -23,3 +24,5 @@ node_modules
 
 # generated files
 /app/components/ui/icons
+
+data.db*

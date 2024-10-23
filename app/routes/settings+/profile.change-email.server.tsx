@@ -49,7 +49,7 @@ export async function handleVerification({
 
 	void sendEmail({
 		to: preUpdateUser.email,
-		subject: 'Epic Stack email changed',
+		subject: 'Santa Codes App email changed',
 		react: <EmailChangeNoticeEmail userId={user.id} />,
 	})
 
@@ -79,7 +79,7 @@ export function EmailChangeEmail({
 		<E.Html lang="en" dir="ltr">
 			<E.Container>
 				<h1>
-					<E.Text>Epic Notes Email Change</E.Text>
+					<E.Text>Santa Codes Email Change</E.Text>
 				</h1>
 				<p>
 					<E.Text>
@@ -100,11 +100,11 @@ function EmailChangeNoticeEmail({ userId }: { userId: string }) {
 		<E.Html lang="en" dir="ltr">
 			<E.Container>
 				<h1>
-					<E.Text>Your Epic Notes email has been changed</E.Text>
+					<E.Text>Your Santa Codes email has been changed</E.Text>
 				</h1>
 				<p>
 					<E.Text>
-						We're writing to let you know that your Epic Notes email has been
+						We're writing to let you know that your Santa Codes email has been
 						changed.
 					</E.Text>
 				</p>

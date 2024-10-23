@@ -1,8 +1,6 @@
 {
-  "name": "santa-codes",
+  "name": "santa-codes-bec3",
   "private": true,
-  "license": "MIT",
-  "author": "Kent C. Dodds <me@kentcdodds.com> (https://kentcdodds.com/)",
   "sideEffects": false,
   "type": "module",
   "imports": {
@@ -61,6 +59,7 @@
     "@remix-run/express": "2.13.1",
     "@remix-run/node": "2.13.1",
     "@remix-run/react": "2.13.1",
+    "@sanity/client": "^6.22.2",
     "@sentry/profiling-node": "^8.35.0",
     "@sentry/remix": "^8.35.0",
     "address": "^2.0.3",
@@ -81,6 +80,7 @@
     "express-rate-limit": "^7.4.1",
     "get-port": "^7.1.0",
     "glob": "^11.0.0",
+    "groq": "^3.62.0",
     "helmet": "^8.0.0",
     "input-otp": "^1.2.4",
     "intl-parse-accept-language": "^1.0.0",
