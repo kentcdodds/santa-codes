@@ -9,7 +9,6 @@ import {
 	Form,
 	useActionData,
 	Link,
-	useNavigation,
 	useFetcher,
 	useFetchers,
 } from '@remix-run/react'
@@ -17,6 +16,7 @@ import { useState } from 'react'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
 import { Button } from '#app/components/ui/button.tsx'
 import { Combobox } from '#app/components/ui/combobox.tsx'
+import { Icon } from '#app/components/ui/icon.tsx'
 import {
 	getBoxForChild,
 	getChildById,
@@ -83,9 +83,11 @@ export function RemoveItemFromBox({ itemId }: { itemId: string }) {
 				type="submit"
 				name="intent"
 				value="remove-item"
-				className="ml-2 text-red-500 hover:text-red-700"
+				className="text-red-500 hover:text-red-700"
 			>
-				Remove
+				<Icon name="trash" className="h-4 w-4">
+					Remove
+				</Icon>
 			</button>
 		</fetcher.Form>
 	)
@@ -184,6 +186,7 @@ export default function ChildDetails() {
 								))}
 							</ul>
 							<AddItemToBox allToys={allToys} boxToys={boxToys} />
+							<div className="h-12" />
 							<Link
 								to={`/box-label/${box._id}`}
 								className="rounded bg-green-500 px-2 py-1 text-white hover:bg-green-600"
